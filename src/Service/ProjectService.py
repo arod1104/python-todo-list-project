@@ -40,7 +40,7 @@ class ProjectService:
         """
         if not self.validate_title(title):
             return None
-        return self.dao.addProject(title.strip())
+        return self.dao.createProject(title.strip())
 
     def getProject(self, project_id: int) -> Optional[Project]:
         """

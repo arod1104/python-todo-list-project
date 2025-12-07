@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS Todo_Item (
 	priority INTEGER NOT NULL CHECK (priority BETWEEN 1 AND 5),
 	completed TEXT NOT NULL CHECK (completed IN ('yes', 'no')),
 	project_id INTEGER,
-	created_at TEXT NOT NULL DEFAULT (datetime('now')),
-	FOREIGN KEY (project_id) REFERENCES Project(project_id) ON DELETE SET NULL
+	created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (project_id) REFERENCES Project(project_id) ON DELETE CASCADE
 );
 
 -- Helpful indexes for queries

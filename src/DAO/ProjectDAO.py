@@ -50,7 +50,7 @@ class ProjectDAO:
         """
         pass
 
-    def addProject(self, title: str) -> Optional[Project]:
+    def createProject(self, title: str) -> Optional[Project]:
         """Insert a new Project row.
 
         Parameters:
@@ -63,7 +63,8 @@ class ProjectDAO:
             sql = "INSERT INTO Project (title) VALUES (?)"
             with _get_conn() as conn:
                 cur = conn.execute(sql, (title,))
-                return Project(project_id=cur.lastrowid, title=title)
+                if cur.lastrowid:
+                    return Project(project_id=cur.lastrowid, title=title)
         except Exception as e:
             raise e.with_traceback(e.__traceback__)
         return None
