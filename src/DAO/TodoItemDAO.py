@@ -39,22 +39,35 @@ class TodoItemDAO:
         """
         pass
 
-    def addTodoItem(self, item: TodoItem) -> Optional[int]:
+    def createTodoItem(self, item: TodoItem) -> Optional[TodoItem]:
         """Insert a new todo item into the database.
 
         Parameters:
             item (TodoItem): domain object containing todo fields. `todo_id` is ignored.
 
         Returns:
-            int: the new row id (todo_id).
+            Optional[TodoItem]: the created `TodoItem` with `todo_id` set if insertion succeeded, otherwise None.
         """
-        sql = (
-            "INSERT INTO Todo_Item (title, description, priority, completed, project_id, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?)"
-        )
-        with _get_conn() as conn:
-            cur = conn.execute(sql, item.to_tuple_for_insert())
-            return cur.lastrowid
+        try:
+            sql = (
+                "INSERT INTO Todo_Item (title, description, priority, completed, project_id, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)"
+            )
+            with _get_conn() as conn:
+                cur = conn.execute(sql, item.to_tuple_for_insert())
+                if cur.lastrowid:
+                    return TodoItem(
+                        todo_id=cur.lastrowid,
+                        title=item.title,
+                        description=item.description,
+                        priority=item.priority,
+                        completed=item.completed,
+                        project_id=item.project_id,
+                        created_at=item.created_at,
+                    )
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return None
 
     def getTodoItemById(self, todo_id: int) -> Optional[TodoItem]:
         """Fetch a todo item by its id.
@@ -65,15 +78,18 @@ class TodoItemDAO:
         Returns:
             Optional[TodoItem]: `TodoItem` if found, otherwise `None`.
         """
-        sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item WHERE todo_id = ?"
-        with _get_conn() as conn:
-            cur = conn.execute(sql, (todo_id,))
-            row = cur.fetchone()
-            if row:
-                return TodoItem.from_row(dict(row))
+        try:
+            sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item WHERE todo_id = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (todo_id,))
+                row = cur.fetchone()
+                if row:
+                    return TodoItem.from_row(dict(row))
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
         return None
 
-    def getAllTodoItemsByProjectId(self, project_id: Optional[int] = None) -> List[TodoItem]:
+    def getAllTodoItemsByProjectId(self, project_id: int) -> List[TodoItem]:
         """List todo items, optionally filtered by project.
 
         Parameters:
@@ -82,15 +98,15 @@ class TodoItemDAO:
         Returns:
             List[TodoItem]: list of `TodoItem` instances (may be empty).
         """
-        if project_id is None:
-            sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item ORDER BY created_at DESC"
-            params = ()
-        else:
+        try:
             sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item WHERE project_id = ? ORDER BY created_at DESC"
             params = (project_id,)
-        with _get_conn() as conn:
-            cur = conn.execute(sql, params)
-            return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
+            with _get_conn() as conn:
+                cur = conn.execute(sql, params)
+                return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return []
 
     def updateTodoItemById(self, item: TodoItem) -> bool:
         """Update an existing todo item.
@@ -101,12 +117,16 @@ class TodoItemDAO:
         Returns:
             bool: True if a row was updated, False otherwise.
         """
-        sql = (
-            "UPDATE Todo_Item SET title = ?, description = ?, priority = ?, completed = ?, project_id = ?, created_at = ? WHERE todo_id = ?"
-        )
-        with _get_conn() as conn:
-            cur = conn.execute(sql, item.to_tuple_for_update())
-            return cur.rowcount > 0
+        try:
+            sql = (
+                "UPDATE Todo_Item SET title = ?, description = ?, priority = ?, completed = ?, project_id = ?, created_at = ? WHERE todo_id = ?"
+            )
+            with _get_conn() as conn:
+                cur = conn.execute(sql, item.to_tuple_for_update())
+                return cur.rowcount > 0
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return False
 
     def deleteTodoItemById(self, todo_id: int) -> bool:
         """Delete a todo item by id.
@@ -117,7 +137,12 @@ class TodoItemDAO:
         Returns:
             bool: True if a row was deleted, False otherwise.
         """
-        sql = "DELETE FROM Todo_Item WHERE todo_id = ?"
-        with _get_conn() as conn:
-            cur = conn.execute(sql, (todo_id,))
-            return cur.rowcount > 0
+        try:
+            sql = "DELETE FROM Todo_Item WHERE todo_id = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (todo_id,))
+                return cur.rowcount > 0
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return False
+    

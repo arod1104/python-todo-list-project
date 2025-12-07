@@ -50,7 +50,7 @@ class ProjectDAO:
         """
         pass
 
-    def addProject(self, title: str) -> Optional[int]:
+    def addProject(self, title: str) -> Optional[Project]:
         """Insert a new Project row.
 
         Parameters:
@@ -59,11 +59,15 @@ class ProjectDAO:
         Returns:
             int: the newly-created row id (project_id).
         """
-        sql = "INSERT INTO Project (title) VALUES (?)"
-        with _get_conn() as conn:
-            cur = conn.execute(sql, (title,))
-            return cur.lastrowid
-
+        try:
+            sql = "INSERT INTO Project (title) VALUES (?)"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (title,))
+                return Project(project_id=cur.lastrowid, title=title)
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return None
+        
     def getProjectById(self, project_id: int) -> Optional[Project]:
         """Retrieve a project by id.
 
@@ -73,12 +77,15 @@ class ProjectDAO:
         Returns:
             Optional[Project]: `Project` instance if found, otherwise `None`.
         """
-        sql = "SELECT project_id, title FROM Project WHERE project_id = ?"
-        with _get_conn() as conn:
-            cur = conn.execute(sql, (project_id,))
-            row = cur.fetchone()
-            if row:
-                return Project.from_row(dict(row))
+        try:
+            sql = "SELECT project_id, title FROM Project WHERE project_id = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (project_id,))
+                row = cur.fetchone()
+                if row:
+                    return Project.from_row(dict(row))
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
         return None
 
     def getAllProjects(self) -> List[Project]:
@@ -87,10 +94,14 @@ class ProjectDAO:
         Returns:
             List[Project]: list of `Project` instances (empty list if none).
         """
-        sql = "SELECT project_id, title FROM Project ORDER BY title"
-        with _get_conn() as conn:
-            cur = conn.execute(sql)
-            return [Project.from_row(dict(r)) for r in cur.fetchall()]
+        try:    
+            sql = "SELECT project_id, title FROM Project ORDER BY title"
+            with _get_conn() as conn:
+                cur = conn.execute(sql)
+                return [Project.from_row(dict(r)) for r in cur.fetchall()]
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return []
 
     def updateProjectTitleById(self, project: Project) -> bool:
         """Update an existing project's title.
@@ -101,11 +112,15 @@ class ProjectDAO:
         Returns:
             bool: True if a row was updated, False otherwise.
         """
-        sql = "UPDATE Project SET title = ? WHERE project_id = ?"
-        with _get_conn() as conn:
-            cur = conn.execute(sql, (project.title, project.project_id))
-            return cur.rowcount > 0
-
+        try:
+            sql = "UPDATE Project SET title = ? WHERE project_id = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (project.title, project.project_id))
+                return cur.rowcount > 0
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return False
+    
     def deleteProjectById(self, project_id: int) -> bool:
         """Delete a project by id.
 
@@ -115,7 +130,11 @@ class ProjectDAO:
         Returns:
             bool: True if a row was deleted, False otherwise.
         """
-        sql = "DELETE FROM Project WHERE project_id = ?"
-        with _get_conn() as conn:
-            cur = conn.execute(sql, (project_id,))
-            return cur.rowcount > 0
+        try:
+            sql = "DELETE FROM Project WHERE project_id = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (project_id,))
+                return cur.rowcount > 0
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return False

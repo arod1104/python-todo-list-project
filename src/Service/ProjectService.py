@@ -19,22 +19,21 @@ class ProjectService:
             return False
         return True
 
-    def create_project(self, title: str) -> Optional[Project]:
+    def createProject(self, title: str) -> Optional[Project]:
         if not self.validate_title(title):
             return None
-        project_id = self.dao.create(title.strip())
-        return self.dao.get(project_id)
+        return self.dao.addProject(title.strip())
 
-    def get_project(self, project_id: int) -> Optional[Project]:
-        return self.dao.get(project_id)
+    def getProject(self, project_id: int) -> Optional[Project]:
+        return self.dao.getProjectById(project_id)
 
-    def list_projects(self) -> List[Project]:
-        return self.dao.list_all()
+    def listProjects(self) -> List[Project]:
+        return self.dao.getAllProjects()
 
-    def update_project(self, project: Project) -> bool:
+    def updateProject(self, project: Project) -> bool:
         if not self.validate_title(project.title):
             return False
-        return self.dao.update(project)
+        return self.dao.updateProjectTitleById(project)
 
-    def delete_project(self, project_id: int) -> bool:
-        return self.dao.delete(project_id)
+    def deleteProject(self, project_id: int) -> bool:
+        return self.dao.deleteProjectById(project_id)
