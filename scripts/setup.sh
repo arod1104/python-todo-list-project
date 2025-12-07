@@ -24,8 +24,7 @@ if [ -f requirements.txt ]; then
   "$VENV_PY" -m pip install -r requirements.txt || true
 fi
 
-echo "Initializing SQLite database at Databases/TodoList.db from Resources/TodoListSetup.sql..."
-
+echo "Initializing SQLite databases..."
 SCHEMA_FILE="src/Resources/TodoListSetup.sql"
 
 if [ ! -f "$SCHEMA_FILE" ]; then
@@ -34,4 +33,14 @@ if [ ! -f "$SCHEMA_FILE" ]; then
 fi
 
 mkdir -p Databases
+
+# Setup TodoList.db
+echo "Setting up Databases/TodoList.db..."
+sqlite3 Databases/TodoList.db < "$SCHEMA_FILE"
+
+# Setup TodoList-test.db
+echo "Setting up Databases/TodoList-test.db..."
+sqlite3 Databases/TodoList-test.db < "$SCHEMA_FILE"
+
+echo "Databases initialized successfully."
 

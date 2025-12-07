@@ -13,8 +13,8 @@ fi
 echo "Updating package lists..."
 apt update
 
-# Install Python and venv
-echo "Installing Python and python3-venv..."
-apt install -y python3 python3.8-venv
+# Install Python, venv, and SQLite3
+echo "Installing Python, python3-venv, and sqlite3..."
+apt install -y python3 python3.8-venv sqlite3
 
 echo "System dependencies installed successfully."

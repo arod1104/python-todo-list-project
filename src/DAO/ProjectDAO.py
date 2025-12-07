@@ -10,31 +10,9 @@ from pathlib import Path
 from typing import List, Optional
 
 from Models.Project import Project
+from Utils.db_connection import _get_db_path, _get_conn
 
-
-DB_NAME = "TodoList.db"
-
-
-def _get_db_path() -> Path:
-    """Return the file system path to the SQLite database file.
-
-    Returns:
-        Path: absolute path to the database file in the repository root.
-    """
-    # repository root is parent of this DAO folder
-    return Path(__file__).resolve().parents[1] / DB_NAME
-
-
-def _get_conn():
-    """Create and return a sqlite3.Connection to the configured DB.
-
-    Returns:
-        sqlite3.Connection: connection object with row_factory set to sqlite3.Row
-    """
-    p = _get_db_path()
-    conn = sqlite3.connect(str(p))
-    conn.row_factory = sqlite3.Row
-    return conn
+DB_PATH = "Databases/TodoList.db"
 
 
 class ProjectDAO:

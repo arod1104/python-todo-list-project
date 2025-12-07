@@ -3,30 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from Models.TodoItem import TodoItem
-
-
-DB_NAME = "TodoList.db"
-
-
-def _get_db_path() -> Path:
-    """Return the path to the SQLite database file.
-
-    Returns:
-        Path: database file path in repository root.
-    """
-    return Path(__file__).resolve().parents[1] / DB_NAME
-
-
-def _get_conn():
-    """Create and return a sqlite3 connection.
-
-    Returns:
-        sqlite3.Connection: connection object (row_factory=sqlite3.Row)
-    """
-    p = _get_db_path()
-    conn = sqlite3.connect(str(p))
-    conn.row_factory = sqlite3.Row
-    return conn
+from Utils.db_connection import _get_db_path, _get_conn
 
 
 class TodoItemDAO:

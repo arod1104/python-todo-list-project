@@ -9,7 +9,9 @@ if SRC not in sys.path:
 
 from Controller.TodoListController import TodoListController
 
+
 def main():
+    print("Python Path:", sys.path)
     app = TodoListController()
     app.run()
 
