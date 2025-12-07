@@ -1,3 +1,5 @@
+from typing import Optional
+
 from Service.ProjectService import ProjectService
 from Service.TodoItemService import TodoItemService
 
@@ -26,7 +28,7 @@ class TodoListController:
             """
         print(help_text)
 
-    def _prompt(self, prompt: str, default: str = None) -> str:
+    def _prompt(self, prompt: str, default: str = "") -> str:
         if default is None:
             return input(prompt).strip()
         v = input(f"{prompt} [{default}] ").strip()
@@ -34,14 +36,14 @@ class TodoListController:
 
     def _create_project_flow(self):
         title = self._prompt("Project title: ")
-        proj = self.projectService.create_project(title)
+        proj = self.projectService.createProject(title)
         if proj:
             print(f"Created: {proj}")
         else:
             print("Failed to create project. Title may be invalid.")
 
     def _list_projects(self):
-        projects = self.projectService.list_projects()
+        projects = self.projectService.getAllProjects()
         if not projects:
             print("No projects found")
             return
@@ -64,45 +66,53 @@ class TodoListController:
             print("Priority must be between 1 and 5")
 
         self._list_projects()
-        proj_raw = self._prompt("Project id (leave empty for none): ", "").strip()
-        project_id = int(proj_raw) if proj_raw else None
+        proj_raw = self._prompt("Project id (enter 0 for all todo items): ", "").strip()
+        while True:
+            try:
+                proj_id = int(proj_raw)
+                todo = self.todoItemService.createTodoItem(title=title, description=description, priority=priority, project_id=proj_id)
+                if todo:
+                    print(f"Created todo: {todo}")
+                else:
+                    print("Failed to create todo. Check inputs and project id.")
+            except ValueError:
+                print("Project id must be a numeric value.")
+                continue
+            break
 
-        todo = self.todoItemService.create_todo(title=title, description=description, priority=priority, project_id=project_id)
-        if todo:
-            print(f"Created todo: {todo}")
+    def _list_todos(self, project_id: Optional[int] = None):
+        if project_id is None:
+            todos = self.todoItemService.getAllTodoItems()
         else:
-            print("Failed to create todo. Check inputs and project id.")
-
-    def _list_todos(self, project_id: int = None):
-        todos = self.todoItemService.list_todos(project_id)
+            todos = self.todoItemService.getAllTodoItemsByProjectId(project_id)
         if not todos:
             print("No todo items found")
             return
         print("Todos:")
         for t in todos:
-            status = "✓" if t.completed else " "
+            status = "yes" if t.completed else "no"
             print(f"  {t.todo_id}: [{status}] {t.title} (priority={t.priority}) project={t.project_id}")
 
     def _complete_todo(self, todo_id: int):
-        todo = self.todoItemService.get_todo(todo_id)
+        todo = self.todoItemService.getTodoItemById(todo_id)
         if not todo:
             print("Todo not found")
             return
         todo.completed = True
-        ok = self.todoItemService.update_todo(todo)
+        ok = self.todoItemService.updateTodoItem(todo)
         print("Marked completed" if ok else "Failed to update todo")
 
     def _delete_todo(self, todo_id: int):
-        ok = self.todoItemService.delete_todo(todo_id)
+        ok = self.todoItemService.deleteTodoItem(todo_id)
         print("Deleted" if ok else "Not found or failed")
 
     def _delete_project(self, project_id: int):
-        ok = self.projectService.delete_project(project_id)
+        ok = self.projectService.deleteProject(project_id)
         print("Deleted project" if ok else "Not found or failed")
 
     # main loop
     def run(self):
-        print("Todo List Application started. Type 'help' for commands")
+        print("Todo List Application started. Type 'help/h/?' for commands")
 
         while True:
             try:
