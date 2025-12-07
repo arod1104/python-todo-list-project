@@ -50,7 +50,7 @@ class ProjectDAO:
         """
         pass
 
-    def create(self, title: str) -> int:
+    def create(self, title: str) -> Optional[int]:
         """Insert a new Project row.
 
         Parameters:
