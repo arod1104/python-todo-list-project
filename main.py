@@ -9,11 +9,9 @@ if SRC not in sys.path:
 
 from Controller.TodoListController import TodoListController
 
-
 def main():
     app = TodoListController()
     app.run()
-
 
 if __name__ == "__main__":
     main()

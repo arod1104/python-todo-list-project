@@ -24,9 +24,12 @@ if [ -f requirements.txt ]; then
   "$VENV_PY" -m pip install -r requirements.txt || true
 fi
 
-echo "Initializing SQLite database at Databases/TodoList.db from resources/TodoListSetup.sql..."
-if [ ! -f "resources/TodoListSetup.sql" ]; then
-  echo "Schema file resources/TodoListSetup.sql not found." >&2
+echo "Initializing SQLite database at Databases/TodoList.db from Resources/TodoListSetup.sql..."
+
+SCHEMA_FILE="src/Resources/TodoListSetup.sql"
+
+if [ ! -f "$SCHEMA_FILE" ]; then
+  echo "Schema file $SCHEMA_FILE not found." >&2
   exit 1
 fi
 
