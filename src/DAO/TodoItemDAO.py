@@ -39,7 +39,7 @@ class TodoItemDAO:
         """
         pass
 
-    def create(self, item: TodoItem) -> Optional[int]:
+    def addTodoItem(self, item: TodoItem) -> Optional[int]:
         """Insert a new todo item into the database.
 
         Parameters:
@@ -56,7 +56,7 @@ class TodoItemDAO:
             cur = conn.execute(sql, item.to_tuple_for_insert())
             return cur.lastrowid
 
-    def get(self, todo_id: int) -> Optional[TodoItem]:
+    def getTodoItemById(self, todo_id: int) -> Optional[TodoItem]:
         """Fetch a todo item by its id.
 
         Parameters:
@@ -73,7 +73,7 @@ class TodoItemDAO:
                 return TodoItem.from_row(dict(row))
         return None
 
-    def list_all(self, project_id: Optional[int] = None) -> List[TodoItem]:
+    def getAllTodoItemsByProjectId(self, project_id: Optional[int] = None) -> List[TodoItem]:
         """List todo items, optionally filtered by project.
 
         Parameters:
@@ -92,7 +92,7 @@ class TodoItemDAO:
             cur = conn.execute(sql, params)
             return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
 
-    def update(self, item: TodoItem) -> bool:
+    def updateTodoItemById(self, item: TodoItem) -> bool:
         """Update an existing todo item.
 
         Parameters:
@@ -108,7 +108,7 @@ class TodoItemDAO:
             cur = conn.execute(sql, item.to_tuple_for_update())
             return cur.rowcount > 0
 
-    def delete(self, todo_id: int) -> bool:
+    def deleteTodoItemById(self, todo_id: int) -> bool:
         """Delete a todo item by id.
 
         Parameters:

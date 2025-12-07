@@ -50,7 +50,7 @@ class ProjectDAO:
         """
         pass
 
-    def create(self, title: str) -> Optional[int]:
+    def addProject(self, title: str) -> Optional[int]:
         """Insert a new Project row.
 
         Parameters:
@@ -64,7 +64,7 @@ class ProjectDAO:
             cur = conn.execute(sql, (title,))
             return cur.lastrowid
 
-    def get(self, project_id: int) -> Optional[Project]:
+    def getProjectById(self, project_id: int) -> Optional[Project]:
         """Retrieve a project by id.
 
         Parameters:
@@ -81,7 +81,7 @@ class ProjectDAO:
                 return Project.from_row(dict(row))
         return None
 
-    def list_all(self) -> List[Project]:
+    def getAllProjects(self) -> List[Project]:
         """List all projects ordered by title.
 
         Returns:
@@ -92,7 +92,7 @@ class ProjectDAO:
             cur = conn.execute(sql)
             return [Project.from_row(dict(r)) for r in cur.fetchall()]
 
-    def update(self, project: Project) -> bool:
+    def updateProjectTitleById(self, project: Project) -> bool:
         """Update an existing project's title.
 
         Parameters:
@@ -106,7 +106,7 @@ class ProjectDAO:
             cur = conn.execute(sql, (project.title, project.project_id))
             return cur.rowcount > 0
 
-    def delete(self, project_id: int) -> bool:
+    def deleteProjectById(self, project_id: int) -> bool:
         """Delete a project by id.
 
         Parameters:
