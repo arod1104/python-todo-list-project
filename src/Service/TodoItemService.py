@@ -11,6 +11,15 @@ class TodoItemService:
         self.project_dao = ProjectDAO()
 
     def validate_priority(self, priority: int) -> bool:
+        """
+        Validates the priority of a todo item.
+
+        Parameters:
+        priority (int): The priority level to validate (1-5).
+
+        Returns:
+        bool: True if the priority is valid, False otherwise.
+        """
         try:
             p = int(priority)
         except Exception:
@@ -18,9 +27,30 @@ class TodoItemService:
         return 1 <= p <= 5
 
     def validate_description(self, description: str) -> bool:
+        """
+        Validates the description of a todo item.
+
+        Parameters:
+        description (str): The description to validate.
+
+        Returns:
+        bool: True if the description is valid, False otherwise.
+        """
         return bool(description and isinstance(description, str) and description.strip())
 
     def createTodoItem(self, title: str, description: str, priority: int, project_id: int) -> Optional[TodoItem]:
+        """
+        Creates a new todo item.
+
+        Parameters:
+        title (str): The title of the todo item.
+        description (str): The description of the todo item.
+        priority (int): The priority level of the todo item (1-5).
+        project_id (int): The ID of the associated project.
+
+        Returns:
+        Optional[TodoItem]: The created TodoItem object if successful, None otherwise.
+        """
         if not title or not isinstance(title, str) or not title.strip():
             return None
         if not self.validate_description(description):
@@ -43,12 +73,48 @@ class TodoItemService:
         return self.dao.createTodoItem(todoObj)
 
     def getTodoItemById(self, todo_id: int) -> Optional[TodoItem]:
+        """
+        Retrieves a todo item by its ID.
+
+        Parameters:
+        todo_id (int): The ID of the todo item to retrieve.
+
+        Returns:
+        Optional[TodoItem]: The TodoItem object if found, None otherwise.
+        """
         return self.dao.getTodoItemById(todo_id)
     
-    def getAllTodoItems(self, project_id:int) -> List[TodoItem]:
+    def getAllTodoItemsByProjectId(self, project_id: int) -> List[TodoItem]:
+        """
+        Retrieves all todo items associated with a specific project.
+
+        Parameters:
+        project_id (int): The ID of the project.
+
+        Returns:
+        List[TodoItem]: A list of TodoItem objects associated with the project.
+        """
         return self.dao.getAllTodoItemsByProjectId(project_id)
+    
+    def getAllTodoItems(self) -> List[TodoItem]:
+        """
+        Retrieves all todo items.
+
+        Returns:
+        List[TodoItem]: A list of all TodoItem objects.
+        """
+        return self.dao.getAllTodoItems()
 
     def updateTodoItem(self, todo: TodoItem) -> bool:
+        """
+        Updates an existing todo item.
+
+        Parameters:
+        todo (TodoItem): The TodoItem object containing updated information.
+
+        Returns:
+        bool: True if the update was successful, False otherwise.
+        """
         if not todo.title or not todo.title.strip():
             return False
         if not self.validate_description(todo.description):
@@ -60,4 +126,13 @@ class TodoItemService:
         return self.dao.updateTodoItemById(todo)
 
     def deleteTodoItem(self, todo_id: int) -> bool:
+        """
+        Deletes a todo item by its ID.
+
+        Parameters:
+        todo_id (int): The ID of the todo item to delete.
+
+        Returns:
+        bool: True if the deletion was successful, False otherwise.
+        """
         return self.dao.deleteTodoItemById(todo_id)

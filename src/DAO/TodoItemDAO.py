@@ -99,10 +99,27 @@ class TodoItemDAO:
             List[TodoItem]: list of `TodoItem` instances (may be empty).
         """
         try:
-            sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item WHERE project_id = ? ORDER BY created_at DESC"
+            sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item WHERE project_id = ? ORDER BY priority ASC"
             params = (project_id,)
             with _get_conn() as conn:
                 cur = conn.execute(sql, params)
+                return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return []
+
+    def getAllTodoItems(self) -> List[TodoItem]:
+        """List all todo items.
+    
+        Parameters:
+            None
+        Returns:
+            List[TodoItem]: list of `TodoItem` instances (may be empty).
+        """
+        try:
+            sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item ORDER BY priority ASC"
+            with _get_conn() as conn:
+                cur = conn.execute(sql)
                 return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
         except Exception as e:
             raise e.with_traceback(e.__traceback__)
