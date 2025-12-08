@@ -2,7 +2,7 @@ import sqlite3
 from pathlib import Path
 
 
-DB_PATH = "Databases/TodoList.db"
+DB_PATH = "../Databases/TodoList.db"
 
 def _get_db_path() -> Path:
     """Return the file system path to the SQLite database file.
