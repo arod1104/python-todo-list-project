@@ -21,7 +21,6 @@ def _get_conn():
         sqlite3.Connection: connection object with row_factory set to sqlite3.Row
     """
     p = _get_db_path()
-    print("Database path:", str(p))
     conn = sqlite3.connect(str(p))
     conn.row_factory = sqlite3.Row
     return conn

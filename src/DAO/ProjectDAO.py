@@ -82,7 +82,7 @@ class ProjectDAO:
             List[Project]: list of `Project` instances (empty list if none).
         """
         try:    
-            sql = "SELECT project_id, title FROM Project ORDER BY title"
+            sql = "SELECT project_id, title FROM Project ORDER BY project_id ASC"
             with _get_conn() as conn:
                 cur = conn.execute(sql)
                 return [Project.from_row(dict(r)) for r in cur.fetchall()]

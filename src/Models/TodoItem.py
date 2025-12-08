@@ -8,7 +8,6 @@ class TodoItem:
     todo_id: Optional[int]
     description: str
     priority: int
-    created_at: str
     title: str
     completed: bool = False
     project_id: Optional[int] = None
@@ -21,14 +20,13 @@ class TodoItem:
             "priority": self.priority,
             "completed": "yes" if self.completed else "no",
             "project_id": self.project_id,
-            "created_at": self.created_at,
         }
 
     def to_tuple_for_insert(self):
-        return (self.title, self.description, self.priority, "yes" if self.completed else "no", self.project_id, self.created_at)
+        return (self.description, self.priority, "yes" if self.completed else "no", self.title, self.project_id)
 
     def to_tuple_for_update(self):
-        return (self.title, self.description, self.priority, "yes" if self.completed else "no", self.project_id, self.created_at, self.todo_id)
+        return (self.description, self.priority, "yes" if self.completed else "no", self.title, self.project_id, self.todo_id)
 
     @classmethod
     def from_row(cls, row: Dict[str, Any]) -> "TodoItem":
@@ -39,7 +37,6 @@ class TodoItem:
             priority=int(row.get("priority") or 3),
             completed=(row.get("completed") == "yes" or bool(row.get("completed")) and str(row.get("completed")).lower() in ("1","true","yes")),
             project_id=row.get("project_id"),
-            created_at=row.get("created_at") or datetime.utcnow().isoformat(),
         )
 
     def __str__(self) -> str:

@@ -34,9 +34,8 @@ class TodoListController:
         v = input(f"{prompt} [{default}] ").strip()
         return v or default
 
-    def _create_project_flow(self):
-        title = self._prompt("Project title: ")
-        proj = self.projectService.createProject(title)
+    def _create_project_flow(self, project_title: str):
+        proj = self.projectService.createProject(project_title)
         if proj:
             print(f"Created: {proj}")
         else:
@@ -103,9 +102,11 @@ class TodoListController:
             return
 
         print("Todos:")
+        print("Todo id; [status] (priority) description Project: project_title")
+        print()
         for t in todos:
-            status = "yes" if t.completed else "no"
-            print(f"  {t.todo_id}: [{status}] {t.title} (priority={t.priority}) project={t.project_id}")
+            status = "x" if t.completed else " "
+            print(f"  id: {t.todo_id}: [{status}] (priority: {t.priority}) {t.description} Project: {t.title or 'N/A'}")
 
     def _complete_todo(self, todo_id: int):
         todo = self.todoItemService.getTodoItemById(todo_id)
@@ -125,7 +126,7 @@ class TodoListController:
         if not project:
             print("Project not found")
             return
-        ok = self.projectService.deleteProjectByTitle(project.title)
+        ok = self.projectService.deleteProjectByTitle(project_title)
         print("Deleted project" if ok else "Failed to delete project")
 
     # main loop
@@ -158,7 +159,10 @@ class TodoListController:
                 if len(parts) >= 2 and parts[1] == "list":
                     self._list_projects()
                 elif len(parts) >= 2 and parts[1] == "create":
-                    self._create_project_flow()
+                    if len(parts) >= 3:
+                        self._create_project_flow(parts[2])
+                    else:
+                        print("Error: No project title provided.")
                 elif len(parts) >= 3 and parts[1] == "delete":
                     self._delete_project(parts[2])
                 else:

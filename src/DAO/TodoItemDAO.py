@@ -25,8 +25,8 @@ class TodoItemDAO:
         """
         try:
             sql = (
-                "INSERT INTO Todo_Item (description, priority, completed, project_id, created_at, title) "
-                "VALUES (?, ?, ?, ?, ?, ?)"
+                "INSERT INTO Todo_Item (description, priority, completed, title, project_id) "
+                "VALUES (?, ?, ?, ?, ?)"
             )
             with _get_conn() as conn:
                 cur = conn.execute(sql, item.to_tuple_for_insert())
@@ -38,7 +38,6 @@ class TodoItemDAO:
                         priority=item.priority,
                         completed=item.completed,
                         project_id=item.project_id,
-                        created_at=item.created_at,
                     )
         except Exception as e:
             raise e.with_traceback(e.__traceback__)
@@ -92,7 +91,7 @@ class TodoItemDAO:
             List[TodoItem]: list of `TodoItem` instances (may be empty).
         """
         try:
-            sql = "SELECT ti.todo_id, ti.title, ti.description, ti.priority, ti.completed, ti.project_id, ti.created_at FROM Todo_Item ti JOIN Project p ON ti.project_id = p.project_id WHERE p.title = ? ORDER BY ti.priority ASC"
+            sql = "SELECT ti.todo_id, ti.title, ti.description, ti.priority, ti.completed, ti.project_id, ti.title FROM Todo_Item ti JOIN Project p ON ti.project_id = p.project_id WHERE p.title = ? ORDER BY ti.priority ASC"
             params = (project_title,)
             with _get_conn() as conn:
                 cur = conn.execute(sql, params)
@@ -110,7 +109,7 @@ class TodoItemDAO:
             List[TodoItem]: list of `TodoItem` instances (may be empty).
         """
         try:
-            sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item ORDER BY priority ASC"
+            sql = "SELECT todo_id, description, priority, completed, project_id, title FROM Todo_Item ORDER BY priority ASC"
             with _get_conn() as conn:
                 cur = conn.execute(sql)
                 return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
@@ -129,7 +128,7 @@ class TodoItemDAO:
         """
         try:
             sql = (
-                "UPDATE Todo_Item SET title = ?, description = ?, priority = ?, completed = ?, project_id = ?, created_at = ? WHERE todo_id = ?"
+                "UPDATE Todo_Item SET description = ?, priority = ?, completed = ?, title = ?, project_id = ? WHERE todo_id = ?"
             )
             with _get_conn() as conn:
                 cur = conn.execute(sql, item.to_tuple_for_update())

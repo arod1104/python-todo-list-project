@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS Project;
 PRAGMA foreign_keys = ON;
 
 -- Projects table: stores categories/projects for todo items
+-- It is not good practice to have ON DELETE CASCADE on non-PRIMARY KEY fields, so it has been removed to avoid syntax errors.
 CREATE TABLE IF NOT EXISTS Project (
 	project_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	title TEXT NOT NULL UNIQUE
@@ -17,11 +18,10 @@ CREATE TABLE IF NOT EXISTS Todo_Item (
 	description TEXT NOT NULL,
 	priority INTEGER NOT NULL CHECK (priority BETWEEN 1 AND 5),
 	completed TEXT NOT NULL CHECK (completed IN ('yes', 'no')),
-	created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	project_id INTEGER NOT NULL,
 	title TEXT NOT NULL,
 	FOREIGN KEY (project_id) REFERENCES Project(project_id) ON DELETE CASCADE,
-	FOREIGN KEY (title) REFERENCES Project(title)
+	FOREIGN KEY (title) REFERENCES Project(title) ON DELETE CASCADE
 );
 
 -- Helpful indexes for queries
@@ -33,13 +33,13 @@ INSERT OR IGNORE INTO Project (project_id, title) VALUES (1, 'General');
 INSERT OR IGNORE INTO Project (project_id, title) VALUES (2, 'Work');
 INSERT OR IGNORE INTO Project (project_id, title) VALUES (3, 'Personal');
 
-INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id, created_at)
-	VALUES (1, 'General', 'Get milk, eggs, bread from grocery store', 3, 'no', 1, datetime('now'));
+INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id)
+	VALUES (1, 'General', 'Get milk, eggs, bread from grocery store', 3, 'no', 1);
 
-INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id, created_at)
-	VALUES (2, 'Work', 'Complete the monthly financial report', 5, 'no', 2, datetime('now'));
+INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id)
+	VALUES (2, 'Work', 'Complete the monthly financial report', 5, 'no', 2);
 
-INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id, created_at)
-	VALUES (3, 'Personal', 'Fix kitchen sink leak', 4, 'yes', 3, datetime('now'));
+INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id)
+	VALUES (3, 'Personal', 'Fix kitchen sink leak', 4, 'yes', 3);
 
 -- End of schema

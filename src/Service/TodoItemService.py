@@ -68,7 +68,6 @@ class TodoItemService:
             priority=int(priority),
             completed=False,
             project_id=project_id,
-            created_at=datetime.now(timezone.utc).isoformat()
         )
         return self.dao.createTodoItem(todoObj)
 
