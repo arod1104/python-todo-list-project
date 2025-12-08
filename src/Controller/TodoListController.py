@@ -16,8 +16,8 @@ class TodoListController:
             quit/exit                Exit the application
 
             Projects:
-            projects list            List all projects
-            projects create          Create a new project
+            projects list                     List all projects
+            projects create <project_title>   Create a new project
             projects delete <project_title>   Delete a project by title
 
             Todos:
@@ -88,14 +88,20 @@ class TodoListController:
         else:
             print("Failed to create todo. Check inputs and try again.")
 
-    def _list_todos(self, project_id: Optional[int] = None):
-        if project_id is None:
-            todos = self.todoItemService.getAllTodoItems()
+    def _list_todos(self, project_title: Optional[str] = None):
+        if project_title:
+            project = self.projectService.getProjectByTitle(project_title)
+            if not project:
+                print("Project not found")
+                return
+            todos = self.todoItemService.getAllTodoItemsByProjectTitle(project.title)
         else:
-            todos = self.todoItemService.getAllTodoItemsByProjectId(project_id)
+            todos = self.todoItemService.getAllTodoItems()
+
         if not todos:
             print("No todo items found")
             return
+
         print("Todos:")
         for t in todos:
             status = "yes" if t.completed else "no"
@@ -114,9 +120,13 @@ class TodoListController:
         ok = self.todoItemService.deleteTodoItem(todo_id)
         print("Deleted" if ok else "Not found or failed")
 
-    def _delete_project(self, project_id: int):
-        ok = self.projectService.deleteProject(project_id)
-        print("Deleted project" if ok else "Not found or failed")
+    def _delete_project(self, project_title: str):
+        project = self.projectService.getProjectByTitle(project_title)
+        if not project:
+            print("Project not found")
+            return
+        ok = self.projectService.deleteProjectByTitle(project.title)
+        print("Deleted project" if ok else "Failed to delete project")
 
     # main loop
     def run(self):
@@ -150,25 +160,15 @@ class TodoListController:
                 elif len(parts) >= 2 and parts[1] == "create":
                     self._create_project_flow()
                 elif len(parts) >= 3 and parts[1] == "delete":
-                    try:
-                        pid = int(parts[2])
-                    except Exception:
-                        print("Provide a numeric project id to delete")
-                        continue
-                    self._delete_project(pid)
+                    self._delete_project(parts[2])
                 else:
-                    print("Unknown projects command. Use 'projects list' or 'projects create' or 'projects delete <id>'")
+                    print("Unknown projects command. Use 'projects list' or 'projects create' or 'projects delete <title>'")
                 continue
 
             if cmd == "todos":
                 if len(parts) >= 2 and parts[1] == "list":
                     if len(parts) == 3:
-                        try:
-                            pid = int(parts[2])
-                        except Exception:
-                            print("project id must be numeric")
-                            continue
-                        self._list_todos(project_id=pid)
+                        self._list_todos(project_title=parts[2])
                     else:
                         self._list_todos()
                 elif len(parts) >= 2 and parts[1] == "add":
@@ -188,7 +188,7 @@ class TodoListController:
                         continue
                     self._delete_todo(tid)
                 else:
-                    print("Unknown todos command. Use 'todos list [project_id]', 'todos add', 'todos complete <id>', or 'todos delete <id>'")
+                    print("Unknown todos command. Use 'todos list [project_title]', 'todos add', 'todos complete <id>', or 'todos delete <id>'")
                 continue
 
             print("Unknown command. Type 'help' for available commands")

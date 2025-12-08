@@ -38,7 +38,7 @@ class TodoItemService:
         """
         return bool(description and isinstance(description, str) and description.strip())
 
-    def createTodoItem(self, title: str, description: str, priority: int, project_id: int) -> Optional[TodoItem]:
+    def createTodoItem(self, title: str, description: str, priority: int, project_id: Optional[int]) -> Optional[TodoItem]:
         """
         Creates a new todo item.
 
@@ -58,7 +58,7 @@ class TodoItemService:
         if not self.validate_priority(priority):
             return None
         # if project_id provided, verify it exists
-        if self.project_service.getProjectbById(project_id) is None:
+        if self.project_service.getProjectByTitle(title) is None:
             return None
 
         todoObj = TodoItem(
@@ -95,6 +95,18 @@ class TodoItemService:
         List[TodoItem]: A list of TodoItem objects associated with the project.
         """
         return self.dao.getAllTodoItemsByProjectId(project_id)
+
+    def getAllTodoItemsByProjectTitle(self, project_title: str) -> List[TodoItem]:
+        """
+        Retrieves all todo items associated with a specific project title.
+
+        Parameters:
+        project_title (str): The title of the project.
+
+        Returns:
+        List[TodoItem]: A list of TodoItem objects associated with the project.
+        """
+        return self.dao.getAllTodoItemsByProjectTitle(project_title)
     
     def getAllTodoItems(self) -> List[TodoItem]:
         """

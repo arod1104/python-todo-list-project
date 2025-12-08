@@ -98,7 +98,7 @@ class ProjectService:
             return False
         return self.dao.updateProjectTitleById(project)
 
-    def deleteProject(self, project_id: int) -> bool:
+    def deleteProjectById(self, project_id: int) -> bool:
         """
         Deletes a project by its ID.
 
@@ -109,3 +109,21 @@ class ProjectService:
         bool: True if the deletion was successful, False otherwise.
         """
         return self.dao.deleteProjectById(project_id)
+    
+    def deleteProjectByTitle(self, title: str) -> bool:
+        """
+        Deletes a project by its title.
+
+        Parameters:
+        title (str): The title of the project to delete.
+
+        Returns:
+        bool: True if the deletion was successful, False otherwise.
+        """
+        project = self.getProjectByTitle(title)
+        if not project:
+            return False
+        # ensure project_id is not None before calling DAO
+        if project.project_id is None:
+            return False
+        return self.dao.deleteProjectById(project.project_id)

@@ -125,3 +125,21 @@ class ProjectDAO:
         except Exception as e:
             raise e.with_traceback(e.__traceback__)
         return False
+    
+    def deleteProjectByTitle(self, title: str) -> bool:
+        """Delete a project by title.
+
+        Parameters:
+            title (str): title of the project to delete.
+
+        Returns:
+            bool: True if a row was deleted, False otherwise.
+        """
+        try:
+            sql = "DELETE FROM Project WHERE title = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (title,))
+                return cur.rowcount > 0
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return False

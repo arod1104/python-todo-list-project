@@ -6,10 +6,10 @@ from datetime import datetime, timezone
 @dataclass
 class TodoItem:
     todo_id: Optional[int]
-    title: str
     description: str
     priority: int
     created_at: str
+    title: str
     completed: bool = False
     project_id: Optional[int] = None
 
@@ -33,7 +33,7 @@ class TodoItem:
     @classmethod
     def from_row(cls, row: Dict[str, Any]) -> "TodoItem":
         return cls(
-            todo_id=row.get("todo_id") or row.get("id"),
+            todo_id=row.get("todo_id"),
             title=row.get("title") or "",
             description=row.get("description") or "",
             priority=int(row.get("priority") or 3),

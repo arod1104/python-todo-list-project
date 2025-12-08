@@ -34,7 +34,7 @@ INSERT OR IGNORE INTO Project (project_id, title) VALUES (2, 'Work');
 INSERT OR IGNORE INTO Project (project_id, title) VALUES (3, 'Personal');
 
 INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id, created_at)
-	VALUES (1, 'General', 'Milk, eggs, bread', 3, 'no', 1, datetime('now'));
+	VALUES (1, 'General', 'Get milk, eggs, bread from grocery store', 3, 'no', 1, datetime('now'));
 
 INSERT OR IGNORE INTO Todo_Item (todo_id, title, description, priority, completed, project_id, created_at)
 	VALUES (2, 'Work', 'Complete the monthly financial report', 5, 'no', 2, datetime('now'));
