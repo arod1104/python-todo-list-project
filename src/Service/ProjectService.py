@@ -42,7 +42,7 @@ class ProjectService:
             return None
         return self.dao.createProject(title.strip())
 
-    def getProject(self, project_id: int) -> Optional[Project]:
+    def getProjectbById(self, project_id: int) -> Optional[Project]:
         """
         Retrieves a project by its ID.
 
@@ -53,6 +53,18 @@ class ProjectService:
         Optional[Project]: The Project object if found, None otherwise.
         """
         return self.dao.getProjectById(project_id)
+    
+    def getProjectByTitle(self, title: str) -> Optional[Project]:
+        """
+        Retrieves a project by its title.
+
+        Parameters:
+        title (str): The title of the project to retrieve.
+
+        Returns:
+        Optional[Project]: The Project object if found, None otherwise.
+        """
+        return self.dao.getProjectByTitle(title)
     
     def getAllProjects(self) -> List[Project]:
         """

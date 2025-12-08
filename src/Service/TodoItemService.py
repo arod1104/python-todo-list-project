@@ -2,13 +2,13 @@ from typing import List, Optional
 from datetime import datetime, timezone
 
 from DAO.TodoItemDAO import TodoItemDAO
-from DAO.ProjectDAO import ProjectDAO
+from Service.ProjectService import ProjectService
 from Models.TodoItem import TodoItem
 
 class TodoItemService:
     def __init__(self):
         self.dao = TodoItemDAO()
-        self.project_dao = ProjectDAO()
+        self.project_service = ProjectService()
 
     def validate_priority(self, priority: int) -> bool:
         """
@@ -58,7 +58,7 @@ class TodoItemService:
         if not self.validate_priority(priority):
             return None
         # if project_id provided, verify it exists
-        if self.project_dao.getProjectById(project_id) is None:
+        if self.project_service.getProjectbById(project_id) is None:
             return None
 
         todoObj = TodoItem(
@@ -121,7 +121,7 @@ class TodoItemService:
             return False
         if not self.validate_priority(todo.priority):
             return False
-        if todo.project_id is not None and self.project_dao.getProjectById(todo.project_id) is None:
+        if todo.project_id is not None and self.project_service.getProjectByTitle(todo.title) is None:
             return False
         return self.dao.updateTodoItemById(todo)
 

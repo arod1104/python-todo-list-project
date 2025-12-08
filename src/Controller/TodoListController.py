@@ -18,13 +18,13 @@ class TodoListController:
             Projects:
             projects list            List all projects
             projects create          Create a new project
-            projects delete <id>     Delete a project by id
+            projects delete <project_title>   Delete a project by title
 
             Todos:
-            todos list [project_id]  List todos (optionally for a project)
+            todos list <project_title>  List todos (optionally for a project)
             todos add                Add a todo (interactive prompts)
-            todos complete <id>      Mark todo completed
-            todos delete <id>        Delete a todo by id
+            todos complete <todo_id>      Mark todo completed
+            todos delete <todo_id>        Delete a todo by id
             """
         print(help_text)
 
@@ -52,33 +52,41 @@ class TodoListController:
             print(f"  {p.project_id}: {p.title}")
 
     def _add_todo_flow(self):
-        title = self._prompt("Todo title: ")
+        project_title = ""
+        while True:
+            project_title = self._prompt("Enter Project Title: ")
+            if project_title and isinstance(project_title, str) and project_title.strip():
+                project = self.projectService.getProjectByTitle(project_title)
+                if project:
+                    break
+                else:
+                    print("Project not found. Please enter a valid project title.")
+            else:
+                print("Project title cannot be empty.")
+
         description = self._prompt("Description: ")
+
         while True:
             priority_raw = self._prompt("Priority (1-5, default 3): ", "3")
             try:
                 priority = int(priority_raw)
-            except Exception:
-                print("Priority must be an integer 1-5")
+            except ValueError:
+                print("Priority must be an integer between 1 and 5.")
                 continue
             if 1 <= priority <= 5:
                 break
-            print("Priority must be between 1 and 5")
+            print("Priority must be between 1 and 5.")
 
-        self._list_projects()
-        proj_raw = self._prompt("Project id (enter 0 for all todo items): ", "").strip()
-        while True:
-            try:
-                proj_id = int(proj_raw)
-                todo = self.todoItemService.createTodoItem(title=title, description=description, priority=priority, project_id=proj_id)
-                if todo:
-                    print(f"Created todo: {todo}")
-                else:
-                    print("Failed to create todo. Check inputs and project id.")
-            except ValueError:
-                print("Project id must be a numeric value.")
-                continue
-            break
+        todo = self.todoItemService.createTodoItem(
+            title=project.title,
+            description=description,
+            priority=priority,
+            project_id=project.project_id
+        )
+        if todo:
+            print(f"Created todo: {todo}")
+        else:
+            print("Failed to create todo. Check inputs and try again.")
 
     def _list_todos(self, project_id: Optional[int] = None):
         if project_id is None:

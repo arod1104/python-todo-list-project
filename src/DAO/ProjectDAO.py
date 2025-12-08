@@ -1,19 +1,7 @@
-import sqlite3
-from pathlib import Path
 from typing import List, Optional
 
 from Models.Project import Project
-
-
-import sqlite3
-from pathlib import Path
-from typing import List, Optional
-
-from Models.Project import Project
-from Utils.db_connection import _get_db_path, _get_conn
-
-DB_PATH = "Databases/TodoList.db"
-
+from Utils.db_connection import _get_conn
 
 class ProjectDAO:
     """Data access object for `Project` records.
@@ -60,6 +48,26 @@ class ProjectDAO:
             sql = "SELECT project_id, title FROM Project WHERE project_id = ?"
             with _get_conn() as conn:
                 cur = conn.execute(sql, (project_id,))
+                row = cur.fetchone()
+                if row:
+                    return Project.from_row(dict(row))
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return None
+    
+    def getProjectByTitle(self, title: str) -> Optional[Project]:
+        """Retrieve a project by title.
+
+        Parameters:
+            title (str): title of the project to fetch.
+
+        Returns:
+            Optional[Project]: `Project` instance if found, otherwise `None`.
+        """
+        try:
+            sql = "SELECT project_id, title FROM Project WHERE title = ?"
+            with _get_conn() as conn:
+                cur = conn.execute(sql, (title,))
                 row = cur.fetchone()
                 if row:
                     return Project.from_row(dict(row))

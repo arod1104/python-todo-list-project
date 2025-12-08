@@ -1,9 +1,7 @@
-import sqlite3
-from pathlib import Path
 from typing import List, Optional
 
 from Models.TodoItem import TodoItem
-from Utils.db_connection import _get_db_path, _get_conn
+from Utils.db_connection import _get_conn
 
 
 class TodoItemDAO:
@@ -27,7 +25,7 @@ class TodoItemDAO:
         """
         try:
             sql = (
-                "INSERT INTO Todo_Item (title, description, priority, completed, project_id, created_at) "
+                "INSERT INTO Todo_Item (description, priority, completed, project_id, created_at, title) "
                 "VALUES (?, ?, ?, ?, ?, ?)"
             )
             with _get_conn() as conn:
@@ -78,6 +76,24 @@ class TodoItemDAO:
         try:
             sql = "SELECT todo_id, title, description, priority, completed, project_id, created_at FROM Todo_Item WHERE project_id = ? ORDER BY priority ASC"
             params = (project_id,)
+            with _get_conn() as conn:
+                cur = conn.execute(sql, params)
+                return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
+        except Exception as e:
+            raise e.with_traceback(e.__traceback__)
+        return []
+    
+    def getAllTodoItemsByProjectTitle(self, project_title: str) -> List[TodoItem]:
+        """List todo items, filtered by project title.
+
+        Parameters:
+            project_title (str): title of the project to filter todos.
+        Returns:
+            List[TodoItem]: list of `TodoItem` instances (may be empty).
+        """
+        try:
+            sql = "SELECT ti.todo_id, ti.title, ti.description, ti.priority, ti.completed, ti.project_id, ti.created_at FROM Todo_Item ti JOIN Project p ON ti.project_id = p.project_id WHERE p.title = ? ORDER BY ti.priority ASC"
+            params = (project_title,)
             with _get_conn() as conn:
                 cur = conn.execute(sql, params)
                 return [TodoItem.from_row(dict(r)) for r in cur.fetchall()]
